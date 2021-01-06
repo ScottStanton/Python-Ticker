@@ -23,19 +23,6 @@ def getStockData(symbol):
   stockData = stockData.replace("False",'"False"')
   stockData = json.loads(stockData)
 
-  symbol = stockData["symbol"]
-  closePrice = stockData["regularMarketPreviousClose"]
-  dayRange = stockData["regularMarketDayRange"]
-  percentChange = stockData["regularMarketChangePercent"]
-  if percentChange < 0:
-     upDown = 'down by'
-  elif percentChange > 0:
-     upDown = 'up by'
-  else:
-     upDown = 'unchanged at'
-
-  txt = "{} closed at {:.2f} {} {:.2f}. The day's range is {}."
-  print(txt.format(symbol,closePrice,upDown,percentChange,dayRange))
 
 # Deal with the command line options
 argList=sys.argv
@@ -47,4 +34,14 @@ if len(argList) == 0:
 
 for stocks in argList:
    getStockData(stocks)
+   print(stockData.get('marketState','none'))
 
+   if stockData.get('regularMarketChangePercent',0) < 0:
+      upDown = 'down by'
+   elif stockData.get('regularMarketChangePercent',0) > 0:
+      upDown = 'up by'
+   else:
+      upDown = 'unchanged at'
+
+   txt = "{} is currently at {:.2f} {} {:.2f}. The day's range is {}."
+   print(txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err')))
