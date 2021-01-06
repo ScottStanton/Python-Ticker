@@ -9,7 +9,7 @@ I guess I'm also learning markdown by writing this readme file.
 
 If you like this idea and you want to take it and make it better, feel free to fork the process.  I have some ideas on what I want to do here, but I don't know when it will get done as this is about 5th in the line of priorities and hobbies.
 
-== Ideas:
+## Ideas:
 * Change the output based on the marketStatus
 * Choose the output based on available parameter given by yahoo's API
 * Integrate pushbullet to send updates 
