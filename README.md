@@ -13,4 +13,4 @@ If you like this idea and you want to take it and make it better, feel free to f
 * Choose the output based on available parameter given by yahoo's API
 * Integrate pushbullet to send updates 
 
-Thanks for looking, I hope you enjoying learning through this.
+Thanks for looking, I hope you enjoying learning through this as much as I have.

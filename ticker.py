@@ -20,13 +20,29 @@ def getStockData(symbol):
   stockData=json.loads(stockInfo.text)        # Load up the json
   stockData = stockData["quoteResponse"]      # Strip off the first two sections
   stockData = stockData["result"]
-  stockData = str(stockData).lstrip("[")      # Strip off the left and right brackets that kill both the json and dictionary values
-  stockData = str(stockData).rstrip("]")
-  stockData = stockData.replace("'",'"')            # Change the single quotes to double
-  stockData = stockData.replace("True",'"True"')    # Add quotes to the non quoted text
-  stockData = stockData.replace("False",'"False"')
+  stockData = str(stockData).lstrip("[").rstrip("]")  # Make valid dictionary format
+  stockData = stockData.replace("'",'"').replace("True",'"True"').replace("False",'"False"')
   stockData = json.loads(stockData)                 # Now we have a dictionary set
 # End of getStockData function
+
+def printStockData():
+   if stockData.get('regularMarketChangePercent',0) < 0:
+      upDown = 'down by'
+   elif stockData.get('regularMarketChangePercent',0) > 0:
+      upDown = 'up by'
+   else:
+      upDown = 'unchanged at'
+
+   # marketState can be PRE, REGULAR, POST or POSTPOST
+   if stockData.get('marketState','err') == 'PRE':
+      txt = "{} closed yessterday at {:.2f} {} {:.2f}. Yesterday's range was {}."
+   elif stockData.get('marketState','err') == 'REGULAR':
+      txt = "{} is currently at {:.2f} {} {:.2f}. The day's range so far is {}."
+   else:
+      txt = "{} closed at {:.2f} {} {:.2f}. The day's range is {}."
+
+   print(txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err')))
+# End of printStockData
 
 
 # Main program
@@ -41,25 +57,9 @@ if len(argList) == 0:
 # Run through each stock symbol listed on the command line
 for stocks in argList:
    getStockData(stocks)
-   print(list(stockData.keys()))
-   print(list(stockData.values()))
-   print('State is ' + stockData.get('marketState','err')  + '  eol')
-
-   if stockData.get('regularMarketChangePercent',0) < 0:
-      upDown = 'down by'
-   elif stockData.get('regularMarketChangePercent',0) > 0:
-      upDown = 'up by'
-   else:
-      upDown = 'unchanged at'
-
-   # marketState can be PRE, REGULAR, POST or POSTPOST
-   if stockData.get('marketState','err') == 'PRE':
-      txt = "{} closed yessterday at  {:.2f} {} {:.2f}. Yesterday's range was {}."
-   elif stockData.get('marketState','err') == 'REGULAR':
-      txt = "{} is currently at {:.2f} {} {:.2f}. The day's range so far is {}."
-   else:
-      txt = "{} closed at {:.2f} {} {:.2f}. The day's range is {}."
-
-   print(txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err')))
+   # print(list(stockData.keys()))
+   # print(list(stockData.values()))
+   # print('State is ' + stockData.get('marketState','err')  + '  eol')
+   printStockData()
 
 #End of program
