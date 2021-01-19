@@ -15,15 +15,15 @@ If you like this idea and you want to take it and make it better, feel free to f
 Thanks for looking, I hope you enjoying learning through this as much as I have.
 
 ## Usage:
-usage: ticker.py [-h]|[--help]
-       -s|--stock [stock_symbol [stock_symbol ...]]
-       [-l|--list]
-       [-p|--params [known_parameters [known_parameters ...]]]
-       [-b|--boundary BOUNDARY BOUNDARY]
-
--s  --stock:     Takes one or more stock symbols to lookup
--l  --list:      Prints a list of parameters that can be used with -p
--p  --params:    Takes a list of paramaters and returns the values for those parameters
--b  --boundary:  Takes two values and returns "low" if the current value of the stock is lower than the lowest range
-                 or it returns "within" if the current value of the stock is within the two values
-                 or it retuns "high" if the current value of the stock is higher than the higest value
+usage: ticker.py [-h]|[--help]<br>
+       -s|--stock [stock_symbol [stock_symbol ...]]<br>
+       [-l|--list]<br>
+       [-p|--params [known_parameters [known_parameters ...]]]<br>
+       [-b|--boundary BOUNDARY BOUNDARY]<br>
+<br>
+-s  --stock:     Takes one or more stock symbols to lookup<br>
+-l  --list:      Prints a list of parameters that can be used with -p<br>
+-p  --params:    Takes a list of paramaters and returns the values for those parameters<br>
+-b  --boundary:  Takes two values and returns "low" if the current value of the stock is lower than the lowest range<br>
+                 or it returns "within" if the current value of the stock is within the two values<br>
+                 or it retuns "high" if the current value of the stock is higher than the higest value<br>
