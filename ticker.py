@@ -10,7 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-s','--stock','--stocks', required=True, nargs='*',
        metavar='stock_symbol', help="List of stocks to get information for.")
 parser.add_argument('-p','--params', nargs='*', metavar='known_parameters',
-       help="Optional list of parameters instead of the usual output. **Not yet imple                                                                                        mented**")
+       help="Optional list of parameters instead of the usual output. **Not yet implemented**")
+parser.add_argument('-l','--list', action='store_true', help="List the parameters available")
 parser.add_argument('-b','--boundary', nargs=2, type=int,
        help="Use to find out if the stock has reached the lower or upper boundary.")
 
@@ -18,7 +19,10 @@ args = parser.parse_args()
 
 if args.params and args.boundary:
     parser.error("--params and --boundary cannot be used together.")
-
+if args.params and args.list:
+    parser.error("--params and --list cannot be used together.")
+if args.boundary and args.list:
+    parser.error("--boundary and --list cannot be used together.")
 
 
 # Let's setup some functions for later use
@@ -64,18 +68,38 @@ def printStockData():
 # Deal with the command line options
 
 # Run through each stock symbol listed on the command line
-if args.params:
-   #print params
-   sys.exit(99)
+if args.list:
+   getStockData(stocks)
+   for k in stockData.keys():
+       print(k)
+   sys.exit(0)
+
+elif args.params:
+   for stocks in args.stock:
+       getStockData(stocks)
+       for p in args.params:
+           print(p + ": " + str(stockData.get(p,'err')))
+   sys.exit(0)
+
 elif args.boundary:
-   #Do boundary stuff
-   sys.exit(99)
+   low = args.boundary[0]
+   high = args.boundary[1]
+   if low > high:
+      low = args.boundary[1]
+      high = args.boundary[0]
+   for stocks in args.stock:
+      getStockData(stocks)
+      if stockData.get('regularMarketPrice',0) < low:
+         print('low')
+      elif stockData.get('regularMarketPrice',0) > high:
+         print('high')
+      else:
+         print('within') 
+   sys.exit(0)
+
 else:
    for stocks in args.stock:
       getStockData(stocks)
-      # print(list(stockData.keys()))
-      # print(list(stockData.values()))
-      # print('State is ' + stockData.get('marketState','err')  + '  eol')
       printStockData()
 
 #End of program
