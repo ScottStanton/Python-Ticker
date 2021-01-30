@@ -15,6 +15,7 @@ If you like this idea and you want to take it and make it better, feel free to f
 Thanks for looking, I hope you enjoying learning through this as much as I have.
 
 ## Usage:
+```
 usage: ticker.py [-h]|[--help]
        -s|--stock [stock_symbol [stock_symbol ...]]
        [-l|--list]
@@ -27,3 +28,4 @@ usage: ticker.py [-h]|[--help]
 -b  --boundary:  Takes two values and returns "low" if the current value of the stock is lower than the lowest range
                  or it returns "within" if the current value of the stock is within the two values
                  or it retuns "high" if the current value of the stock is higher than the higest value
+```
