@@ -69,7 +69,7 @@ def printStockData():
 
 # Run through each stock symbol listed on the command line
 if args.list:
-   getStockData(stocks)
+   getStockData(args.stock[0])
    for k in stockData.keys():
        print(k)
    sys.exit(0)
