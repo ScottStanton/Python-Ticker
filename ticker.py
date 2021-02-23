@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 # 
-#
+# 
 
 import argparse
 import json
+import os
 import requests
 import sys
 
@@ -11,23 +12,48 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-s','--stock','--stocks', required=True, nargs='*',
        metavar='stock_symbol', help="List of stocks to get information for.")
-parser.add_argument('-p','--params', nargs='*', metavar='known_parameters',
-       help="Optional list of parameters instead of the usual output. **Not yet implemented**")
+parser.add_argument('-a','--attributes', nargs='*', metavar='known_attributes',
+       help="Optional list of attributes instead of the usual output.")
 parser.add_argument('-l','--list', action='store_true', help="List the parameters available")
+parser.add_argument('-p','--pushbullet', action='store_true', help="Send results via Pushbullet. Requires your token to be in ~/.pushbullettoken")
 parser.add_argument('-b','--boundary', nargs=2, type=int,
        help="Use to find out if the stock has reached the lower or upper boundary.")
 
 args = parser.parse_args()
 
-if args.params and args.boundary:
-    parser.error("--params and --boundary cannot be used together.")
-if args.params and args.list:
-    parser.error("--params and --list cannot be used together.")
+if args.attributes and args.boundary:
+    parser.error("--attributes and --boundary cannot be used together.")
+if args.attributes and args.list:
+    parser.error("--attributes and --list cannot be used together.")
 if args.boundary and args.list:
     parser.error("--boundary and --list cannot be used together.")
+if args.list and args.pushbullet:
+    parser.error("--list and --pushbullet cannot be used together.")
 
 
 # Let's setup some functions for later use
+
+#Pushbullet function
+def pushbullet_note(title, body):
+    data_send = {"type": "note", "title": title, "body": body}
+    
+    tokenpath=os.path.expanduser("~") + "/.pushbullettoken"
+    try:
+       f = open(tokenpath, "r")
+    except:
+       print("Your pushbullet token needs to be saved in " + tokenpath)
+       sys.exit(1)
+
+    atoken=f.read().rstrip()
+    f.close()
+
+    resp = requests.post('https://api.pushbullet.com/v2/pushes', data=json.dumps(data_send),
+                         headers={'Authorization': 'Bearer ' + atoken, 'Content-Type': 'application/json'})
+    if resp.status_code != 200:
+        raise Exception('Something wrong')
+    else:
+        print('complete sending')
+
 
 # This function will take the stock symbol and turn the data from it into a dictionary variable that
 # is able to be used in the rest of the program.
@@ -62,7 +88,12 @@ def printStockData():
    else:
       txt = "{} closed at {:.2f} {} {:.2f}%. The day's range is {}."
 
-   print(txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err')))
+   if args.pushbullet:
+      stitle=stockData.get('symbol','err')
+      sbody=txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err'))
+      pushbullet_note(stitle,sbody)
+   else:
+      print(txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err')))
 # End of printStockData
 
 
@@ -76,11 +107,20 @@ if args.list:
        print(k)
    sys.exit(0)
 
-elif args.params:
+elif args.attributes:
+   attrbody=""
+   attrtitle=""
    for stocks in args.stock:
+       attrbody += stocks + "\n"
+       attrtitle += "," + stocks
        getStockData(stocks)
-       for p in args.params:
-           print(p + ": " + str(stockData.get(p,'err')))
+       for p in args.attributes:
+           attrbody += p + ": " + str(stockData.get(p,'err')) + "\n"
+   if args.pushbullet:
+       attrtitle = attrtitle.lstrip(",")
+       pushbullet_note(attrtitle,attrbody)
+   else:
+       print(attrbody)
    sys.exit(0)
 
 elif args.boundary:
@@ -89,14 +129,23 @@ elif args.boundary:
    if low > high:
       low = args.boundary[1]
       high = args.boundary[0]
+   btitle = ""
+   bbody = ""
    for stocks in args.stock:
+      btitle += "," + stocks
+      bbody += stocks + ": "
       getStockData(stocks)
       if stockData.get('regularMarketPrice',0) < low:
-         print('low')
+         bbody += 'lower than ' + str(low) + '\n'
       elif stockData.get('regularMarketPrice',0) > high:
-         print('high')
+         bbody += 'higher than ' + str(high) + '\n'
       else:
-         print('within') 
+         bbody += 'within ' + str(low) + ' and ' + str(high) + '\n' 
+   if args.pushbullet:
+      btitle = btitle.lstrip(",")
+      pushbullet_note(btitle,bbody) 
+   else:
+      print(bbody)
    sys.exit(0)
 
 else:
