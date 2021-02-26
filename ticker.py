@@ -15,7 +15,7 @@ parser.add_argument('-s','--stock','--stocks', required=True, nargs='*',
 parser.add_argument('-a','--attributes', nargs='*', metavar='known_attributes',
        help="Optional list of attributes instead of the usual output.")
 parser.add_argument('-l','--list', action='store_true', help="List the parameters available")
-parser.add_argument('-p','--pushbullet', action='store_true', help="Send results via Pushbullet. Requires your token to be in ~/.pushbullettoken")
+parser.add_argument('-p','--pushbullet', nargs='*', help="Send results via Pushbullet. Requires your token to be in ~/.pushbullettoken")
 parser.add_argument('-b','--boundary', nargs=2, type=int,
        help="Use to find out if the stock has reached the lower or upper boundary.")
 
@@ -88,7 +88,7 @@ def printStockData():
    else:
       txt = "{} closed at {:.2f} {} {:.2f}%. The day's range is {}."
 
-   if args.pushbullet:
+   if args.pushbullet is not None:
       stitle=stockData.get('symbol','err')
       sbody=txt.format(stockData.get('symbol','err'),stockData.get('regularMarketPrice',0),upDown,stockData.get('regularMarketChangePercent',0),stockData.get('regularMarketDayRange','err'))
       pushbullet_note(stitle,sbody)
@@ -116,7 +116,7 @@ elif args.attributes:
        getStockData(stocks)
        for p in args.attributes:
            attrbody += p + ": " + str(stockData.get(p,'err')) + "\n"
-   if args.pushbullet:
+   if args.pushbullet is not None:
        attrtitle = attrtitle.lstrip(",")
        pushbullet_note(attrtitle,attrbody)
    else:
@@ -131,19 +131,30 @@ elif args.boundary:
       high = args.boundary[0]
    btitle = ""
    bbody = ""
+   barg=""
    for stocks in args.stock:
       btitle += "," + stocks
       bbody += stocks + ": "
       getStockData(stocks)
       if stockData.get('regularMarketPrice',0) < low:
          bbody += 'lower than ' + str(low) + '\n'
+         barg += 'l'
       elif stockData.get('regularMarketPrice',0) > high:
          bbody += 'higher than ' + str(high) + '\n'
+         barg += 'h'
       else:
          bbody += 'within ' + str(low) + ' and ' + str(high) + '\n' 
-   if args.pushbullet:
+         barg += 'w'
+   if args.pushbullet is not None:
       btitle = btitle.lstrip(",")
-      pushbullet_note(btitle,bbody) 
+      if 'l' in args.pushbullet and 'l' in barg:
+         pushbullet_note(btitle,bbody)
+      elif 'h' in args.pushbullet and 'h' in barg:
+         pushbullet_note(btitle,bbody)
+      elif 'w' in args.pushbullet and 'w' in barg:
+         pushbullet_note(btitle,bbody)
+      elif len(args.pushbullet) == 0:
+         pushbullet_note(btitle,bbody) 
    else:
       print(bbody)
    sys.exit(0)

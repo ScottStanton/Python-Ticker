@@ -18,7 +18,7 @@ usage: ticker.py [-h]|[--help]
        [-l|--list]
        [-a|--attributes known_attributes [known_attributes ...]]
        [-b|--boundary BOUNDARY BOUNDARY]
-       [-p|--pushbullet]
+       [-p|--pushbullet [l] [w] [h]]
 
 -s --stock --stocks:  Takes one or more stock symbols to lookup.
 -l --list:            Prints a list of attributes that can be used with -a.
@@ -27,4 +27,7 @@ usage: ticker.py [-h]|[--help]
                         or it returns "within XX and YY" if the current value of the stock is within the two values.
                         or it retuns "higher than YY" if the current value of the stock is higher than the higest value.
 -p --pushbullet       Sends output to Pushbullet. Requires a pushbullet token in the file ~/.pushbullettoken.
+                        The l, w, or h options only work with boundaries.  They are ignored for other options
+                        If 'l' is chosen then it only sends if the value is lower.  'w' for within and 'h' for higher.
+                        You can combine them (i.e. -p w h) to get data sent if it is within or higher.
 ```
