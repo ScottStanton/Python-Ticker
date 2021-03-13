@@ -8,6 +8,7 @@ import os
 import requests
 import sys
 
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-s','--stock','--stocks', required=True, nargs='*',
@@ -18,6 +19,7 @@ parser.add_argument('-l','--list', action='store_true', help="List the parameter
 parser.add_argument('-p','--pushbullet', nargs='*', help="Send results via Pushbullet. Requires your token to be in ~/.pushbullettoken")
 parser.add_argument('-b','--boundary', nargs=2, type=int,
        help="Use to find out if the stock has reached the lower or upper boundary.")
+parser.add_argument('-q','--quiet', nargs='*', help="Give no response when using boundary and pushbullet.  Good for when running from cron.")
 
 args = parser.parse_args()
 
@@ -29,6 +31,8 @@ if args.boundary and args.list:
     parser.error("--boundary and --list cannot be used together.")
 if args.list and args.pushbullet:
     parser.error("--list and --pushbullet cannot be used together.")
+if args.quiet and not args.pushbullet:
+    parser.error("--quiet requires --pushbullet")
 
 
 # Let's setup some functions for later use
@@ -52,7 +56,8 @@ def pushbullet_note(title, body):
     if resp.status_code != 200:
         raise Exception('Something wrong')
     else:
-        print('complete sending')
+        if args.quiet is None:
+            print('Message sent.')
 
 
 # This function will take the stock symbol and turn the data from it into a dictionary variable that
@@ -163,5 +168,6 @@ else:
    for stocks in args.stock:
       getStockData(stocks)
       printStockData()
+   sys.exit(0)
 
 #End of program

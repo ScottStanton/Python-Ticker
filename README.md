@@ -18,7 +18,7 @@ usage: ticker.py [-h]|[--help]
        [-l|--list]
        [-a|--attributes known_attributes [known_attributes ...]]
        [-b|--boundary BOUNDARY BOUNDARY]
-       [-p|--pushbullet [l] [w] [h]]
+       [-p|--pushbullet [l] [w] [h]  [-q|--quiet]]
 
 -s --stock --stocks:  Takes one or more stock symbols to lookup.
 -l --list:            Prints a list of attributes that can be used with -a.
@@ -30,4 +30,6 @@ usage: ticker.py [-h]|[--help]
                         The l, w, or h options only work with boundaries.  They are ignored for other options
                         If 'l' is chosen then it only sends if the value is lower.  'w' for within and 'h' for higher.
                         You can combine them (i.e. -p w h) to get data sent if it is within or higher.
+-q --quiet            Stops the "Message sent" message from being diplayed when pushbullet message is sent
+                        This is useful when the command is used in a cron job
 ```
