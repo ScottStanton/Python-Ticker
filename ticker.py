@@ -87,7 +87,7 @@ def printStockData():
 
    # marketState can be PRE, REGULAR, POST or POSTPOST or CLOSED
    if stockData.get('marketState','err') == 'PRE':
-      txt = "{} closed yessterday at {:.2f} {} {:.2f}%. Yesterday's range was {}."
+      txt = "{} closed yesterday at {:.2f} {} {:.2f}%. Yesterday's range was {}."
    elif stockData.get('marketState','err') == 'REGULAR':
       txt = "{} is currently at {:.2f} {} {:.2f}%. The day's range so far is {}."
    else:
