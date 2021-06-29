@@ -1,6 +1,11 @@
 #!/usr/bin/python3
-# 
-# 
+#
+# Written by ScottStanton
+# https://github.com/ScottStanton/
+#
+# This software is covered by The Unlicense license 
+#
+
 
 import argparse
 import json
