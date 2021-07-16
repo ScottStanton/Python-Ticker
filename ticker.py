@@ -1,17 +1,13 @@
 #!/usr/bin/python3
-#
-# Written by ScottStanton
-# https://github.com/ScottStanton/
-#
-# This software is covered by The Unlicense license 
-#
-
+# 
+# 
 
 import argparse
 import json
 import os
 import requests
 import sys
+import time
 
 
 parser = argparse.ArgumentParser()
@@ -25,6 +21,7 @@ parser.add_argument('-p','--pushbullet', nargs='*', help="Send results via Pushb
 parser.add_argument('-b','--boundary', nargs=2, type=int,
        help="Use to find out if the stock has reached the lower or upper boundary.")
 parser.add_argument('-q','--quiet', nargs='*', help="Give no response when using boundary and pushbullet.  Good for when running from cron.")
+parser.add_argument('-v','--verbose', action='store_true', help="Write verbose output")
 
 args = parser.parse_args()
 
@@ -41,6 +38,13 @@ if args.quiet and not args.pushbullet:
 
 
 # Let's setup some functions for later use
+def debug_print(string):
+    # Add print statement here is -v is set.  Still have to figure out how to set it.
+    if args.verbose:
+        now = time.localtime()
+        debug_time = str(time.strftime("%H:%M:%S ", now))
+        print(f'DEBUG: {debug_time} - {string}')
+## End of function
 
 #Pushbullet function
 def pushbullet_note(title, body):
@@ -70,8 +74,11 @@ def pushbullet_note(title, body):
 
 def getStockData(symbol):
   global stockData
+  headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
   URL='https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=' + symbol
-  stockInfo=requests.get(URL)
+  debug_print(URL)
+  stockInfo=requests.get(URL, headers=headers)
+  debug_print('stockInfo is ' + str(stockInfo))
 
   # Change the output to be a dictionary value from the psudeo json that we get.
   stockData=json.loads(stockInfo.text)        # Load up the json
